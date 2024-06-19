@@ -26,9 +26,16 @@ export const getAllBlogPosts = (): Promise<{ data: any }> => {
     return new Promise(async (resolve, reject) => {
       const formData = new FormData();
       formData.append("file", imageFile);
-      
+      console.log(imageFile)
+      console.log("FormData:", formData.get("file"));
       try {
-        const {data} = await api.post(`/api/v1/blog/upload-file`,formData);
+        const {data} = await api.post(`/api/v1/blog/upload-file`,formData,
+         {
+          headers: {
+            "Content-Type": "multipart/form-data"
+          }
+         }
+        );
         resolve({ data });
       } catch (error) {
         reject(error);
