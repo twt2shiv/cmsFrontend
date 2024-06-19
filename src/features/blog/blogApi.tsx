@@ -54,11 +54,11 @@ export const createBlogPost = (): Promise<{data:any }> => {
       }
     });
   };
-  export const updateBlogPost = (blodata:any): Promise<{data:any }> => {
+  export const updateBlogPost = (blogdata:any): Promise<{data:any }> => {
     
     return new Promise(async (resolve, reject) => {
       try {
-        const data =await  api.post(`/api/v1/blog/update-blog/${blodata.id}`)
+        const data =await  api.post(`/api/v1/blog/update-blog/${blogdata.id}`,blogdata)
         resolve({ data });
         console.log(data)
       } catch (error) {
