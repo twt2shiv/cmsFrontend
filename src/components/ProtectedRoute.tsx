@@ -5,10 +5,10 @@ import { useNavigate } from 'react-router-dom';
 
 interface ProtectedProps {
   children: ReactNode;
-  authentication?: boolean;
+  authentication: boolean;
 }
 
-const ProtectedRoute: React.FC<ProtectedProps> = ({ children}) => {
+const ProtectedRoute: React.FC<ProtectedProps> = ({ children,authentication = true}) => {
   const { token } = useSelector((state: RootState) => state.auth);
   const navigate = useNavigate();
  useEffect(()=>{
@@ -17,7 +17,7 @@ const ProtectedRoute: React.FC<ProtectedProps> = ({ children}) => {
   }else{
     navigate("/")
   }
- },[token])
+ },[token,authentication])
   return <>{children}</>
 };
 

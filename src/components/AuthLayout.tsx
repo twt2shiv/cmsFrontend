@@ -3,7 +3,6 @@ export interface LayoutProps  {
     children: React.ReactNode
  }
 const AuthLayout = (props: LayoutProps) => {
-    
   return (
     <Wrapper>
       <div className="left">

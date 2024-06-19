@@ -40,8 +40,7 @@ export const getAllBlogPosts = (): Promise<{ data: any }> => {
 export const createBlogPost = (): Promise<{data:any }> => {
     return new Promise(async (resolve, reject) => {
       try {
-        const {data} =await api.post(`/api/v1/blog/craete-blog`);
-        console.log("data",data)
+        const {data} =await api.post(`/api/v1/blog/craete-blog`,{Headers:{Athorization:`Bearer ${localStorage.getItem("token")}`}});
         resolve({ data });
       } catch (error) {
         reject(error);
@@ -52,7 +51,7 @@ export const createBlogPost = (): Promise<{data:any }> => {
     
     return new Promise(async (resolve, reject) => {
       try {
-        const data =await  api.post(`/api/v1/blog/update-blog/${blodata.id}`,blodata)
+        const data =await  api.post(`/api/v1/blog/update-blog/${blodata.id}`)
         resolve({ data });
         console.log(data)
       } catch (error) {
