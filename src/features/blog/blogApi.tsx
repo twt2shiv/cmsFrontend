@@ -3,7 +3,7 @@ import { api } from "@/utils";
 
 export const getAllBlogPosts = (): Promise<{ data: any }> => {
     return new Promise(async (resolve) => {
-      const data = await api.get(`/api/v1/blog/`)
+      const data = await api.get(`/api/v1/blog?category=all&author=all`)
       resolve({ data });
     });
   };
