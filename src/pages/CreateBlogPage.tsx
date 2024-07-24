@@ -5,11 +5,9 @@ import { Editor } from "@tinymce/tinymce-react";
 import { Button } from "@/components/ui/button";
 import { IoMdSend } from "react-icons/io";
 import { FaRegImage } from "react-icons/fa6";
-import MultipleSelector, { Option } from "@/components/ui/MultipleSelecter";
 import { Editor as TinyMCEEditor } from "tinymce";
 import { Textarea } from "@/components/ui/textarea";
 import { useNavigate, useParams } from "react-router-dom";
-
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -19,10 +17,16 @@ import { useDispatch, useSelector } from "react-redux";
 import { uploadImageAsync, fetchBlogByIdAsync, updateblogAsync, deleteThumbnailAsync } from "@/features/blog/blogSlice";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { IoCloudDoneSharp } from "react-icons/io5";
-
+import { getAllCategoriesAsync } from "../features/blog/blogSlice";
+import Select from "react-select";
+import makeAnimated from "react-select/animated";
+import { transformCategory } from "@/hepler";
+import CreatableSelect from "react-select/creatable";
+import { customStyles } from "@/config/SelectStyleConfig";
 interface RouteParams extends Record<string, string> {
   blogId: string;
 }
+const animatedComponents = makeAnimated();
 
 const CreateBlogPage: React.FC = () => {
   const [category, setCategory] = useState<string[]>([]);
@@ -35,7 +39,7 @@ const CreateBlogPage: React.FC = () => {
   const [title, setTitle] = useState<string>("");
   const dispatch: AppDispatch = useDispatch();
   const navigate = useNavigate();
-  const { imageUrl, imageUploadStatus, blogPost, thumbnailDelete, blogUpdated,updateblogLoading } = useSelector((state: RootState) => state.blog);
+  const { imageUrl, imageUploadStatus, blogPost, thumbnailDelete, blogUpdated, updateblogLoading, categories, cateryLoading } = useSelector((state: RootState) => state.blog);
 
   const { blogId } = useParams<RouteParams>();
   const log = () => {
@@ -47,14 +51,6 @@ const CreateBlogPage: React.FC = () => {
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file: any = event.target.files?.[0];
     dispatch(uploadImageAsync(file));
-  };
-
-  const handleLabelChange = (options: Option[]) => {
-    setLabel(options.map((opt) => opt.value));
-  };
-
-  const handleCategoryChange = (options: Option[]) => {
-    setCategory(options.map((opt) => opt.value));
   };
 
   const handleMetaDescChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -101,12 +97,6 @@ const CreateBlogPage: React.FC = () => {
     });
   };
 
-  const categoryies: Option[] = category.map((elem) => {
-    return { label: elem, value: elem };
-  });
-  const labels: Option[] = label.map((elem) => {
-    return { label: elem, value: elem };
-  });
   useEffect(() => {
     dispatch(fetchBlogByIdAsync(blogId));
   }, [thumbnailDelete, imageUrl]);
@@ -152,7 +142,11 @@ const CreateBlogPage: React.FC = () => {
     }, 5000);
     return () => clearTimeout(handler);
   }, [category, label, metadesc, content, title, imageUrl]);
-  console.log("blogpost",blogPost)
+  useEffect(() => {
+    dispatch(getAllCategoriesAsync());
+  }, []);
+  console.log(category);
+  console.log(label);
   return (
     <Wrapper>
       <Navbar>
@@ -205,20 +199,24 @@ const CreateBlogPage: React.FC = () => {
           </div>
         </div>
         <div className="right">
-          <div className="action flex py-10 gap-2 justify-center items-center">
-            {
-              updateblogLoading ? <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> : <span><IoCloudDoneSharp size={25} className="text-slate-600"/> </span>
-            }
-            
-            <Button variant={"outline"} className="shadow-md px-10 border border-slate-400" onClick={handleblogsave}>
+          <div className="flex items-center justify-center gap-2 py-10 action">
+            {updateblogLoading ? (
+              <ReloadIcon className="w-4 h-4 mr-2 animate-spin" />
+            ) : (
+              <span>
+                <IoCloudDoneSharp size={25} className="text-slate-600" />{" "}
+              </span>
+            )}
+
+            <Button variant={"outline"} className="px-10 border shadow-md border-slate-400" onClick={handleblogsave}>
               Save
             </Button>
             <Button variant={"default"} className="flex gap-3" onClick={handleBlogPublish}>
-                <IoMdSend size={20} />
-                Publish
-              </Button>
+              <IoMdSend size={20} />
+              Publish
+            </Button>
           </div>
-          <div className="thumbnail flex justify-center">
+          <div className="flex justify-center thumbnail">
             {!imageUploadStatus && !imageUrl && !selectedImage && (
               <label className="custum-file-upload" htmlFor="file">
                 <div className="icon">
@@ -233,11 +231,11 @@ const CreateBlogPage: React.FC = () => {
             {!selectedImage && imageUploadStatus && (
               <div className="image_load ">
                 {" "}
-                <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                <ReloadIcon className="w-4 h-4 mr-2 animate-spin" />
               </div>
             )}
-            {(!imageUploadStatus  && (selectedImage || imageUrl)) && (
-              <div className="thumbnail_img relative">
+            {!imageUploadStatus && (selectedImage || imageUrl) && (
+              <div className="relative thumbnail_img">
                 <AlertDialog>
                   <AlertDialogTrigger>
                     <button className="">
@@ -267,13 +265,48 @@ const CreateBlogPage: React.FC = () => {
           </div>
           <div className="label">
             <div className="w-full px-3 py-3">
-              <MultipleSelector onChange={handleLabelChange} placeholder="tags" creatable value={labels} />
+              <CreatableSelect
+                isClearable={false}
+                value={transformCategory(label)}
+                onChange={(e: any) => {
+                  setLabel(
+                    e.map((item: any) => {
+                      return item.value;
+                    })
+                  );
+                }}
+                components={animatedComponents}
+                isMulti
+                closeMenuOnSelect={false}
+                blurInputOnSelect={false}
+                styles={customStyles}
+                placeholder={"create lables"}
+              />
             </div>
           </div>
-          <div className="category px-3 py-3">
-            <MultipleSelector onChange={handleCategoryChange} placeholder="Categories" creatable value={categoryies} />
+          <div className="px-3 py-3 category">
+            <Select
+            placeholder="select categories"
+              isLoading={cateryLoading}
+              isClearable={false}
+              value={transformCategory(category)}
+              onChange={(e: any) => {
+                setCategory(
+                  e.map((item: any) => {
+                    return item.value;
+                  })
+                );
+              }}
+              components={animatedComponents}
+              isMulti
+              options={transformCategory(categories?.data)}
+              closeMenuOnSelect={false}
+              blurInputOnSelect={false}
+              styles={customStyles}
+            />
           </div>
-          <div className="meta_description px-3 py-3">
+          <div></div>
+          <div className="px-3 py-3 meta_description">
             <Textarea placeholder="Meta description" onChange={handleMetaDescChange} value={metadesc} />
           </div>
         </div>

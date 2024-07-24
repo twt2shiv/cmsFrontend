@@ -2,17 +2,18 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUserAsync } from "@/features/auth/authSlice";
 import { AppDispatch, RootState } from '../store/store';
+
 interface FormValues {
   username: string;
   password: string;
 }
 const LoginPage :  React.FC= () => {
+
   const {
     register,
     handleSubmit,
@@ -21,16 +22,18 @@ const LoginPage :  React.FC= () => {
   const { status } = useSelector((state: RootState) => state.auth);
   
   const onSubmit = (data: FormValues) => {
-    dispatch(loginUserAsync(data));
-
+    dispatch(loginUserAsync(data)).then((response:any)=>{
+      if(response.payload?.data?.data?.accessToken){
+        window.location.reload()
+      }
+    })
   };
  
   return (
    <>
-  
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex items-center justify-center min-h-screen">
       <form action="" onSubmit={handleSubmit(onSubmit)}>
-        <Card className="mx-auto max-w-sm">
+        <Card className="max-w-sm mx-auto">
           <CardHeader className="space-y-1">
             <CardTitle className="text-2xl font-bold">Login</CardTitle>
             <CardDescription>Enter your email and password to login to your account</CardDescription>
@@ -48,7 +51,7 @@ const LoginPage :  React.FC= () => {
               {status === 'failed' && <p className="text-red-600">invalid credentials</p>}
               {status === "loading" ? (
                 <Button disabled className="w-full">
-                  <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                  <ReloadIcon className="w-4 h-4 mr-2 animate-spin" />
                   Please wait
                 </Button>
               ) : (
@@ -58,14 +61,7 @@ const LoginPage :  React.FC= () => {
               )}
             </div>
           </CardContent>
-          <div className="py-3 flex justify-center">
-            <p>
-              Create a new account -{" "}
-              <Link to={"/signup"} className="text-blue-500">
-                Signup
-              </Link>
-            </p>
-          </div>
+         
         </Card>
       </form>
     </div>

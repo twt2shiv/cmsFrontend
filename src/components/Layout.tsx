@@ -9,19 +9,23 @@ import { IoTrashOutline } from "react-icons/io5";
 import { NavLink, useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../store/store";
 import { useDispatch, useSelector } from "react-redux";
-import {  logout } from "@/features/auth/authSlice";
-import { createblogAsync } from "@/features/blog/blogSlice";
+import { logout } from "@/features/auth/authSlice";
+import { createblogAsync, getAllCategoriesAsync } from "@/features/blog/blogSlice";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useEffect } from "react";
+
 
 export interface LayoutProps {
   children: React.ReactNode;
 }
 const Layout = (props: LayoutProps) => {
-  const dispatch: AppDispatch = useDispatch();
+  const dispatch= useDispatch<AppDispatch >();
   const navigate = useNavigate();
 
-  const { blogId ,createBlogLoading} = useSelector((state: RootState) => state.blog);
+  const { blogId, createBlogLoading } = useSelector((state: RootState) => state.blog);
+console.log()
 
   const handleLogout = () => {
     dispatch(logout());
@@ -29,7 +33,11 @@ const Layout = (props: LayoutProps) => {
   const craeteBlog = () => {
     dispatch(createblogAsync());
   };
+  
   if (blogId !== null) navigate(`/create-blog/${blogId}`);
+  useEffect(()=>{
+    dispatch(getAllCategoriesAsync())
+  },[])
   return (
     <Wrapper>
       <Navbar>
@@ -48,9 +56,20 @@ const Layout = (props: LayoutProps) => {
             </span>
             <input type="text" placeholder="Search" />
           </div>
+          <div>
+            <Select>
+              <SelectTrigger className="w-[180px] border-slate-400">
+                <SelectValue placeholder="Select Website" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="mscorpres">MsCorpres</SelectItem>
+                <SelectItem value="nextgenz">NextgenZ</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <div className="logout">
             <AlertDialog>
-              <AlertDialogTrigger className="border shadow-md py-2 px-5 flex justify-center align-center font-medium rounded-md"> Logout</AlertDialogTrigger>
+              <AlertDialogTrigger className="flex justify-center px-5 py-2 font-medium text-white bg-red-700 border rounded-md shadow hover:bg-red-600 shadow-slate-300 align-center"> Logout</AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -71,15 +90,15 @@ const Layout = (props: LayoutProps) => {
         <Sidebar>
           <div className="sidebar_container">
             <div className="new_post">
-             
-              {
-                createBlogLoading ? <Button disabled variant={"outline"} onClick={craeteBlog} className="d-flex gap-2 shadow-md px-10 py-5 text-customText">
-                 <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
-              </Button>:
-               <Button variant={"outline"} onClick={craeteBlog} className="d-flex gap-2 shadow-md px-8 py-5 text-customText">
-               <FaPlus /> NEW POST
-             </Button>
-              }
+              {createBlogLoading ? (
+                <Button disabled variant={"outline"} onClick={craeteBlog} className="gap-2 px-10 py-5 shadow-md d-flex text-customText">
+                  <ReloadIcon className="w-4 h-4 mr-2 animate-spin" />
+                </Button>
+              ) : (
+                <Button variant={"outline"} onClick={craeteBlog} className="gap-2 px-8 py-5 shadow-md d-flex text-customText">
+                  <FaPlus /> NEW POST
+                </Button>
+              )}
             </div>
             <hr />
             <div className="side_links">
@@ -99,6 +118,7 @@ const Layout = (props: LayoutProps) => {
                     <IoTrashOutline size={23} /> Trash
                   </NavLink>
                 </li>
+                
               </ul>
             </div>
           </div>

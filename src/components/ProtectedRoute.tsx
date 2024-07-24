@@ -1,24 +1,33 @@
-import { RootState } from '@/store/store';
-import React, { ReactNode, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import useToken from "@/hooks/useToken";
+import { RootState } from "@/store/store";
+
+import React, { useEffect, ReactNode } from "react";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 interface ProtectedProps {
   children: ReactNode;
-  authentication: boolean;
+  authentication?: boolean;
 }
 
-const ProtectedRoute: React.FC<ProtectedProps> = ({ children,authentication = true}) => {
-  const { token } = useSelector((state: RootState) => state.auth);
+const Protected: React.FC<ProtectedProps> = ({ children, authentication = true }) => {
+  const { token, setToken } = useToken();
+  const authStatus: boolean = token ? true : false; // This should ideally come from your auth logic/state
   const navigate = useNavigate();
- useEffect(()=>{
-  if (!token) {
-    navigate("/login");
-  }else{
-    navigate("/")
-  }
- },[token,authentication])
-  return <>{children}</>
+  useEffect(() => {
+    if (authentication && authStatus !== authentication) {
+      navigate("/login");
+    } else if (!authentication && authStatus !== authentication) {
+      navigate("/");
+    }
+  }, [authStatus, authentication]);
+  const data = useSelector((state: RootState) => state.auth);
+  useEffect(() => {
+    if (data?.token) {
+      setToken({ token: data?.token });
+    }
+  }, [data]);
+  return <>{children}</>;
 };
 
-export default ProtectedRoute;
+export default Protected;

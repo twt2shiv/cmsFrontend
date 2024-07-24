@@ -1,24 +1,28 @@
-import { api } from "@/utils";
-
-
+import { cmsAxios } from "@/axiosIntercepter";
 export const getAllBlogPosts = (): Promise<{ data: any }> => {
     return new Promise(async (resolve) => {
-      const data = await api.get(`/api/v1/blog?category=all&author=all`)
+      const data = await cmsAxios.get(`/api/v1/blog?category=all&author=all`)
       resolve({ data });
     });
   };
   
   export const getSingleBlog = (slug: string): Promise<{ data: any }> => {
     return new Promise(async (resolve) => {
-      const data = await api.get(`/api/v1/blog/${slug}`);
+      const data = await cmsAxios.get(`/api/v1/blog/${slug}`);
       resolve({ data });
     });
   };
   export const getBlogById = (id: string | undefined): Promise<{ data: any }> => {
-    console.log("api",id)
+    
     return new Promise(async (resolve) => {
-      const data = await api.get(`/api/v1/blog/edit/${id}`);
+      const data = await cmsAxios.get(`/api/v1/blog/edit/${id}`);
       
+      resolve({ data });
+    });
+  };
+  export const getAllCategories = (): Promise<{ data: any }> => {
+    return new Promise(async (resolve) => {
+      const data = await cmsAxios.get(`/api/v1/blog/fetchCategory`);
       resolve({ data });
     });
   };
@@ -29,7 +33,7 @@ export const getAllBlogPosts = (): Promise<{ data: any }> => {
       console.log(imageFile)
       console.log("FormData:", formData.get("file"));
       try {
-        const {data} = await api.post(`/api/v1/blog/upload-file`,formData,
+        const {data} = await cmsAxios.post(`/api/v1/blog/upload-file`,formData,
          {
           headers: {
             "Content-Type": "multipart/form-data"
@@ -47,7 +51,7 @@ export const getAllBlogPosts = (): Promise<{ data: any }> => {
 export const createBlogPost = (): Promise<{data:any }> => {
     return new Promise(async (resolve, reject) => {
       try {
-        const {data} =await api.post(`/api/v1/blog/craete-blog`,{Headers:{Athorization:`Bearer ${localStorage.getItem("token")}`}});
+        const {data} =await cmsAxios.post(`/api/v1/blog/craete-blog`,{Headers:{Athorization:`Bearer ${localStorage.getItem("token")}`}});
         resolve({ data });
       } catch (error) {
         reject(error);
@@ -58,7 +62,7 @@ export const createBlogPost = (): Promise<{data:any }> => {
     
     return new Promise(async (resolve, reject) => {
       try {
-        const data =await  api.post(`/api/v1/blog/update-blog/${blogdata.id}`,blogdata)
+        const data =await  cmsAxios.post(`/api/v1/blog/update-blog/${blogdata.id}`,blogdata)
         resolve({ data });
         console.log(data)
       } catch (error) {
@@ -69,7 +73,7 @@ export const createBlogPost = (): Promise<{data:any }> => {
   export const deleteBlog = (id: string | undefined): Promise<{ data: any }> => {
     console.log("api",id)
     return new Promise(async (resolve) => {
-      const data = await api.delete(`/api/v1/blog/delete-blog/${id}`);
+      const data = await cmsAxios.delete(`/api/v1/blog/delete-blog/${id}`);
       resolve({ data });
     });
   };
@@ -77,7 +81,7 @@ export const createBlogPost = (): Promise<{data:any }> => {
   export const deleteThumbnail = (id: string | undefined): Promise<{ data: any }> => {
     console.log("api",id)
     return new Promise(async (resolve) => {
-      const data = await api.delete(`/api/v1/blog/delete-image/${id}`);
+      const data = await cmsAxios.delete(`/api/v1/blog/delete-image/${id}`);
       resolve({ data });
     });
   };

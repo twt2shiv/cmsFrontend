@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createBlogPost, deleteBlog, deleteThumbnail, getAllBlogPosts, getBlogById, getSingleBlog, updateBlogPost, uploadBlogImage } from "./blogApi";
+import { createBlogPost, deleteBlog, deleteThumbnail, getAllBlogPosts, getAllCategories, getBlogById, getSingleBlog, updateBlogPost, uploadBlogImage } from "./blogApi";
 import { toast } from "react-toastify";
 
 
@@ -17,7 +17,9 @@ interface BlogState {
   blogUpdated:boolean;
   createBlogLoading: boolean;
   deleteBlogLoading:boolean;
-  updateblogLoading:boolean
+  updateblogLoading:boolean;
+  cateryLoading:boolean;
+  categories:any | null
 }
 
 // Define the initial state with type annotations
@@ -34,7 +36,9 @@ const initialState: BlogState = {
   blogUpdated: false,
   createBlogLoading:false,
   deleteBlogLoading:false,
-  updateblogLoading:false
+  updateblogLoading:false,
+  cateryLoading:false,
+  categories:null
 };
 
 // Define the async thunks with type annotations for their payloads
@@ -71,7 +75,10 @@ export const uploadImageAsync = createAsyncThunk<any, File>("blog/uploadImage", 
     const response = await deleteThumbnail(id);
     return response.data;
   });
-
+  export const getAllCategoriesAsync = createAsyncThunk("blog/allcategories", async () => {
+    const response = await getAllCategories();
+    return response.data;
+  });
 // Create the slice with type annotations
 export const blogSlice = createSlice({
   name: "blog",
@@ -134,9 +141,8 @@ export const blogSlice = createSlice({
         state.blogUpdated = false
        
       })
-      .addCase(updateblogAsync.fulfilled, (state, action: PayloadAction<any>) => {
+      .addCase(updateblogAsync.fulfilled, (state) => {
         state.updateblogLoading = false;
-        console.log("bloga",action.payload)
         state.blogUpdated = true
         
       })
@@ -162,10 +168,21 @@ export const blogSlice = createSlice({
         state.imageUploadStatus =false
         state.imageUrl = ""
         state.thumbnailDelete = true
-     
       })
       .addCase(deleteThumbnailAsync.rejected, (state) => {
         state.imageUploadStatus = false
+      })
+      .addCase(getAllCategoriesAsync.pending, (state) => {
+        state.cateryLoading =true;
+       
+      })
+      .addCase(getAllCategoriesAsync.fulfilled, (state, action: PayloadAction<any>) => {
+        state.categories = action.payload.data
+        state.cateryLoading =false
+        console.log( action.payload.data)
+      })
+      .addCase(getAllCategoriesAsync.rejected, (state) => {
+        state.cateryLoading =false
       })
   },
 });

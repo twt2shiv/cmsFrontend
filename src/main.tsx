@@ -6,7 +6,6 @@ import BlogListingPage from "./pages/BlogListingPage.tsx";
 import Layout from "./components/Layout.tsx";
 import CreateBlogPage from "./pages/CreateBlogPage.js";
 import LoginPage from "./pages/LoginPage.tsx";
-import SignupPage from "./pages/SignupPage.tsx";
 import StatsPage from "./pages/StatsPage.tsx";
 import TrashPage from "./pages/TrashPage.tsx";
 import AuthLayout from "./components/AuthLayout.tsx";
@@ -41,16 +40,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      {
-        path: "/signup",
-        element: (
-          <ProtectedRoute authentication={false}>
-            <AuthLayout>
-              <SignupPage />
-            </AuthLayout>
-          </ProtectedRoute>
-        ),
-      },
+     
       {
         path: "/stats",
         element: (

@@ -59,9 +59,9 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    logout: (state) => {
-      localStorage.removeItem("token");
-      state.token = null;
+    logout: () => {
+      localStorage.removeItem("accessToken");
+     window.location.reload()
     },
     getToken:(state)=>{
       state.token = localStorage.getItem("token")
@@ -78,9 +78,8 @@ const authSlice = createSlice({
         state.isAuthenticated = true;
         state.isVerified = true
         state.user = action.payload;
-        state.error = null;
-        localStorage.setItem("token", action.payload.data.data.accessToken);
-       state.token = localStorage.getItem("token")
+        state.error = null
+       state.token = action.payload.data.data.accessToken
       })
       .addCase(loginUserAsync.rejected, (state, action) => {
         state.status = 'failed';
