@@ -1,7 +1,7 @@
 import { cmsAxios } from "@/axiosIntercepter";
-export const getAllBlogPosts = (): Promise<{ data: any }> => {
+export const getAllBlogPosts = (query:string): Promise<{ data: any }> => {
     return new Promise(async (resolve) => {
-      const data = await cmsAxios.get(`/api/v1/blog?category=all&author=all`)
+      const data = await cmsAxios.get(`/api/v1/blog?category=all&author=all&website=${query}`)
       resolve({ data });
     });
   };
@@ -48,10 +48,10 @@ export const getAllBlogPosts = (): Promise<{ data: any }> => {
   };
   
   // blogApi.ts
-export const createBlogPost = (): Promise<{data:any }> => {
+export const createBlogPost = (payload:{website:string}): Promise<{data:any }> => {
     return new Promise(async (resolve, reject) => {
       try {
-        const {data} =await cmsAxios.post(`/api/v1/blog/craete-blog`,{Headers:{Athorization:`Bearer ${localStorage.getItem("token")}`}});
+        const {data} =await cmsAxios.post(`/api/v1/blog/craete-blog`,payload);
         resolve({ data });
       } catch (error) {
         reject(error);

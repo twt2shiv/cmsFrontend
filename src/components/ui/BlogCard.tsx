@@ -18,9 +18,6 @@ import { AppDispatch, RootState} from "../../store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { deleteBlogIdAsync } from "@/features/blog/blogSlice";
 import { Link } from "react-router-dom";
-
-
-import { convertTimestampToReadableFormat } from "@/utils";
 import { useState } from "react";
 
 interface ProtectedProps {
@@ -41,7 +38,7 @@ const BlogCard :React.FC<ProtectedProps> = ({blog}) => {
             <h2>{`${blog?.title.slice(0,100)}${blog?.title.length > 90 ? "..." : ""}`}</h2>
           </div>
           <div className="blog_detail">
-            <div className="publish_date">Published. {convertTimestampToReadableFormat(blog?.updatedAt).date}, {convertTimestampToReadableFormat(blog?.updatedAt).time}</div>
+            <div className="publish_date">Published. {blog?.timeAgo}</div>
           </div>
         </div>
       </div>
@@ -53,7 +50,7 @@ const BlogCard :React.FC<ProtectedProps> = ({blog}) => {
         <div className="action">
           <Dialog>
             <DialogTrigger asChild>
-              <Button variant="outline" className="border-none p-0 share">
+              <Button variant="outline" className="p-0 border-none share">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
@@ -82,16 +79,16 @@ const BlogCard :React.FC<ProtectedProps> = ({blog}) => {
                 </div>
                 <Button type="submit" size="sm" className="px-3">
                   <span className="sr-only">Copy</span>
-                  <CopyIcon className="h-4 w-4" />
+                  <CopyIcon className="w-4 h-4" />
                 </Button>
               </div>
-              <div className="social flex gap-10">
+              <div className="flex gap-10 social">
                     <a href="#"><FaFacebookF size={20} color="#546e7a"/></a>
                     <a href="#"><FaLinkedinIn size={20} color="#546e7a"/></a>
                     <a href="#"><FaXTwitter size={20} color="#546e7a"/></a>
                     <a href="#"><FaWhatsapp size={20} color="#546e7a"/></a>
                 </div>
-              <DialogFooter className="sm:justify-start flex flex-col">
+              <DialogFooter className="flex flex-col sm:justify-start">
                 <DialogClose asChild>
                   <Button type="button" variant="secondary">
                     Close
@@ -133,7 +130,7 @@ const BlogCard :React.FC<ProtectedProps> = ({blog}) => {
                     {" "}
                     <a href="#">
                       {
-                        deleteBlogLoading && id === blog?._id ?   <ReloadIcon className="mr-2 h-4 w-4 animate-spin" /> :  <MdDelete />
+                        deleteBlogLoading && id === blog?._id ?   <ReloadIcon className="w-4 h-4 mr-2 animate-spin" /> :  <MdDelete />
                       }
                      
                     </a>

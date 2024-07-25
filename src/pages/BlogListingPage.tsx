@@ -1,20 +1,14 @@
 import styled from "styled-components";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import BlogCard from "@/components/ui/BlogCard";
-import { useEffect } from "react";
-import { AppDispatch, RootState } from "../store/store";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchBlogsAsync } from "@/features/blog/blogSlice";
+import {  RootState } from "../store/store";
+import { useSelector } from "react-redux";
 import { Skeleton } from "@/components/ui/skeleton"
-
 const BlogListingPage = () => {
-  const dispatch: AppDispatch = useDispatch();
-  const { blogPosts ,deleteBlog,loading} = useSelector((state: RootState) => state.blog);
-  useEffect(()=>{
-    dispatch(fetchBlogsAsync())
-  },[deleteBlog])
-  const blogList = blogPosts?.data
+  const { blogPosts ,loading} = useSelector((state: RootState) => state.blog);
  
+  const blogList = blogPosts?.data
+
   return (
     <Wrapper>
       <div className="action">

@@ -145,8 +145,6 @@ const CreateBlogPage: React.FC = () => {
   useEffect(() => {
     dispatch(getAllCategoriesAsync());
   }, []);
-  console.log(category);
-  console.log(label);
   return (
     <Wrapper>
       <Navbar>

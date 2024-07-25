@@ -42,8 +42,8 @@ const initialState: BlogState = {
 };
 
 // Define the async thunks with type annotations for their payloads
-export const fetchBlogsAsync = createAsyncThunk<any>("blog/fetchAllBlogs", async () => {
-  const response = await getAllBlogPosts();
+export const fetchBlogsAsync = createAsyncThunk<any ,string>("blog/fetchAllBlogs", async (query:string) => {
+  const response = await getAllBlogPosts(query);
   return response.data;
 });
 
@@ -63,8 +63,8 @@ export const uploadImageAsync = createAsyncThunk<any, File>("blog/uploadImage", 
     const response = await uploadBlogImage(imageFile);
     return response.data;
   });
-  export const createblogAsync = createAsyncThunk<any>("blog/craeteblog", async () => {
-    const response = await createBlogPost();
+  export const createblogAsync = createAsyncThunk<any, any>("blog/craeteblog", async (payload:{website:string}) => {
+    const response = await createBlogPost(payload);
     return response.data;
   });
   export const updateblogAsync = createAsyncThunk<any, any>("blog/updateblog", async (data) => {

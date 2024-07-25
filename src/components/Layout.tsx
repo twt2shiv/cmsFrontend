@@ -10,34 +10,38 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { AppDispatch, RootState } from "../store/store";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "@/features/auth/authSlice";
-import { createblogAsync, getAllCategoriesAsync } from "@/features/blog/blogSlice";
+import { createblogAsync, fetchBlogsAsync, getAllCategoriesAsync } from "@/features/blog/blogSlice";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
 export interface LayoutProps {
   children: React.ReactNode;
 }
 const Layout = (props: LayoutProps) => {
+  const [website,setWebsite] =useState<string>("mscorpres")
   const dispatch= useDispatch<AppDispatch >();
   const navigate = useNavigate();
 
-  const { blogId, createBlogLoading } = useSelector((state: RootState) => state.blog);
+  const { blogId, createBlogLoading,deleteBlog } = useSelector((state: RootState) => state.blog);
 console.log()
 
   const handleLogout = () => {
     dispatch(logout());
   };
   const craeteBlog = () => {
-    dispatch(createblogAsync());
+    dispatch(createblogAsync({website}));
   };
   
   if (blogId !== null) navigate(`/create-blog/${blogId}`);
   useEffect(()=>{
     dispatch(getAllCategoriesAsync())
   },[])
+  useEffect(()=>{
+    dispatch(fetchBlogsAsync(website))
+  },[deleteBlog,website])
   return (
     <Wrapper>
       <Navbar>
@@ -57,7 +61,7 @@ console.log()
             <input type="text" placeholder="Search" />
           </div>
           <div>
-            <Select>
+            <Select onValueChange={(e:string)=>setWebsite(e)} value={website}>
               <SelectTrigger className="w-[180px] border-slate-400">
                 <SelectValue placeholder="Select Website" />
               </SelectTrigger>
